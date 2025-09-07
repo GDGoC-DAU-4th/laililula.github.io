@@ -1,0 +1,65 @@
+/* 전체 페이지 기본 스타일 */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: white;
+}
+
+/* 배경 이미지 */
+.hero {
+  position: relative;
+  height: 100vh;
+  
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  flex-direction: column; /* 세로 정렬 */
+}
+
+/* 아래쪽 그라데이션 */
+.overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+}
+
+/* 콘텐츠 */
+.content {
+  position: relative;
+  z-index: 2;
+}
+
+.logo {
+  width: 400px;   /* 원하는 크기로 조정 */
+  margin-bottom: 20px; /* 글자와 겹치지 않게 간격 */
+  margin-top: 100px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin: 0 0 20px 0;
+}
+
+p {
+  font-size: 1.2rem;
+  margin: 10px 0 20px 0;
+}
+
+button {
+  background: #ff4d4d;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #e63939;
+}
