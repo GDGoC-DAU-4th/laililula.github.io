@@ -229,31 +229,3 @@ document.addEventListener('click', (e) => {
     setTimeout(() => { if (typeof setScrolling === 'function') setScrolling(false); }, 1100);
   }
 });
-
-// === Hero -> Projects 한 번에 이동 시 About 애니메이션 1회 스킵 플래그 ===
-(() => {
-  const sections = Array.from(document.querySelectorAll('.section'));
-  if (!sections.length) return;
-
-  // 현재 화면 중앙에 가장 가까운 섹션 인덱스
-  function nearestIndex() {
-    const mid = window.scrollY + window.innerHeight / 2;
-    let best = 0, bestDist = Infinity;
-    sections.forEach((sec, i) => {
-      const d = Math.abs(sec.offsetTop - mid);
-      if (d < bestDist) { bestDist = d; best = i; }
-    });
-    return best;
-  }
-
-  // 네비에서 "#projects"를 클릭했고, 지금 Hero(인덱스 0)에 있으면 1회 스킵
-  document.addEventListener('click', (e) => {
-    const a = e.target.closest('a[href="#projects"]');
-    if (!a) return;
-    const idx = nearestIndex();
-    if (idx === 0) {
-      // 이 플래그는 다음에 #about이 보일 때 한 번만 체크되고 바로 해제됨
-      window.__skipAboutOnce = true;
-    }
-  }, true);
-})();
