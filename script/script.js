@@ -17,36 +17,25 @@ function typing() {
     setTimeout(typing, 60);
   }
 }
-window.addEventListener("load", typing);
-
 
 /************************************
  * 2) GDGoC 변환 애니메이션 (About)
+ *    - 폰트 로드 후에 시작하도록 분리
  ************************************/
-// 중앙 완성 → 왼쪽 상단으로 이동(여백 포함) + 글자 크기 축소
-document.addEventListener("DOMContentLoaded", () => {
+function startAboutAnimation() {
   const box  = document.getElementById("gdgoc-box");
   const line = document.getElementById("gdgoc-text");
   if (!box || !line) return;
 
-  // 1) 문장을 단어 단위로 구조화
-  const original = line.textContent.trim();             // "Google Developer Group on Campus"
-  const words    = original.split(/\s+/);                // ["Google","Developer","Group","on","Campus"]
+  const original = line.textContent.trim();
+  const words    = original.split(/\s+/);
   line.textContent = "";
 
   const firsts = [];
   words.forEach(w => {
-    const wrap  = document.createElement("span");
-    wrap.className = "word";
-
-    const first = document.createElement("span");
-    first.className = "first";
-    first.textContent = w[0];
-
-    const rest  = document.createElement("span");
-    rest.className = "rest";
-    rest.textContent = w.slice(1);
-
+    const wrap  = document.createElement("span"); wrap.className = "word";
+    const first = document.createElement("span"); first.className = "first"; first.textContent = w[0];
+    const rest  = document.createElement("span"); rest.className  = "rest";  rest.textContent  = w.slice(1);
     wrap.append(first, rest);
     line.appendChild(wrap);
     firsts.push(first);
@@ -57,19 +46,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const io = new IntersectionObserver((entries) => {
     if (!entries[0].isIntersecting) return;
 
-    // Step 1: 나머지 글자 fade-out
-    setTimeout(() => {
-      rests.forEach(el => el.classList.add("hide"));
-    }, 900);
+    // 1) 나머지 글자 fade-out
+    setTimeout(() => { rests.forEach(el => el.classList.add("hide")); }, 900);
 
-    // Step 2: 앞글자 5개를 "최종 문장 전체가 뷰포트 중앙"이 되도록 모음
+    // 2) 중앙으로 모으기 → 3) 타이핑 → 4) 왼쪽 상단으로 이동 + 축소
     setTimeout(() => {
       const phrase = "는 무엇을 하는 곳인가요?";
-      const scale  = 1.35;  // 중앙에서의 GDGoC 확대 비율
-      const gap    = 6;     // GDGoC 글자 간격
-      const phraseGap = 12; // GDGoC와 문장 사이 여백
+      const scale  = 1.35, gap = 6, phraseGap = 12;
 
-      // 복제 생성 + 현재 위치로 배치
       const boxRect = box.getBoundingClientRect();
       const clones = firsts.map(f => {
         const r = f.getBoundingClientRect();
@@ -84,22 +68,18 @@ document.addEventListener("DOMContentLoaded", () => {
         return c;
       });
 
-      // 크기 계산
       const rectsRaw      = clones.map(c => c.getBoundingClientRect());
       const widthsScaled  = rectsRaw.map(r => r.width * scale);
       const gdgocWidth    = widthsScaled.reduce((a,b)=>a+b,0) + gap*(clones.length-1);
 
-      // 타이핑 폭 측정(스케일 적용)
       const baseFont = parseFloat(getComputedStyle(firsts[0]).fontSize) || 24;
       const meas = document.createElement("span");
-      meas.style.cssText =
-        `position:absolute;visibility:hidden;white-space:nowrap;font-weight:700;font-size:${baseFont*scale}px`;
+      meas.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font-weight:700;font-size:${baseFont*scale}px`;
       meas.textContent = phrase;
       box.appendChild(meas);
       const phraseWidth = meas.getBoundingClientRect().width;
       meas.remove();
 
-      // 화면 중앙 배치
       const totalWidth     = gdgocWidth + phraseGap + phraseWidth;
       const viewportStartX = (window.innerWidth  - totalWidth) / 2;
       const viewportCenterY=  window.innerHeight / 2;
@@ -118,7 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
         acc += widthsScaled[i] + gap;
       });
 
-      // 중앙 고정 + 타이핑 시작
       setTimeout(() => {
         clones.forEach(c => { c.style.transition = "none"; });
 
@@ -133,7 +112,6 @@ document.addEventListener("DOMContentLoaded", () => {
         typingEl.style.top  = (topInViewport  - boxRect.top ) + "px";
         box.appendChild(typingEl);
 
-        // 타이핑 실행
         const typeSpeed = 70;
         let k = 0;
         (function typeNext(){
@@ -141,45 +119,36 @@ document.addEventListener("DOMContentLoaded", () => {
             typingEl.textContent += phrase[k++];
             setTimeout(typeNext, typeSpeed);
           } else {
-            // 중앙에서 완성된 뒤 → 왼쪽 상단으로 이동(여백 포함) + 글자 크기 축소
             setTimeout(moveToTopLeft, 500);
           }
         })();
 
-        // ===== 왼쪽 상단으로 이동(여백 포함) + 축소 =====
+        // 중앙 → 왼쪽 상단 이동 + 축소
         function moveToTopLeft(){
-          // 원하는 여백/속도/목표 스케일
-          const marginLeft  = 56;   // 왼쪽 여백
-          const marginTop   = 96;   // 상단 여백(네비+간격)
-          const targetScale = 1.00; // 왼쪽 상단에서의 GDGoC 스케일(작아짐)
-          const moveDuration= 900;  // 이동 시간(ms)
-          const gap2        = 6;
-          const phraseGap2  = 12;
+          const marginLeft  = 56;   // 여백: 왼쪽
+          const marginTop   = 96;   // 여백: 상단
+          const targetScale = 1.00; // 축소 비율
+          const moveDuration= 900;
+          const gap2 = 6, phraseGap2 = 12;
 
-          // 재계산(목표 스케일 기준 폭)
           const boxR = box.getBoundingClientRect();
           const widthsScaledTarget = rectsRaw.map(r => r.width * targetScale);
           const gdgocWidthTarget   = widthsScaledTarget.reduce((a,b)=>a+b,0) + gap2*(clones.length-1);
 
-          // 타이핑 문장 폭도 목표 스케일로 재측정
           const meas2 = document.createElement("span");
-          meas2.style.cssText =
-            `position:absolute;visibility:hidden;white-space:nowrap;font-weight:700;font-size:${baseFont*targetScale}px`;
+          meas2.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font-weight:700;font-size:${baseFont*targetScale}px`;
           meas2.textContent = phrase;
           box.appendChild(meas2);
           const phraseWidthTarget = meas2.getBoundingClientRect().width;
           meas2.remove();
 
-          // 왼쪽 상단 목표(뷰포트 좌표)
-          const startXLeft = marginLeft; // 전체 문장의 왼쪽 x
-          const topY       = marginTop;  // 전체 문장의 윗 y
+          const startXLeft = marginLeft; // 전체 문장의 왼쪽 x (뷰포트)
+          const topY       = marginTop;  // 전체 문장의 윗 y   (뷰포트)
 
-          // 클론들 이동(변환 애니메이션 재활성화)
           let acc2 = 0;
           clones.forEach((c, i) => {
             c.style.transition = `transform ${moveDuration}ms cubic-bezier(.22,.61,.36,1)`;
 
-            // base(변환 전) 중심 좌표 (뷰포트) — transform 기준은 '원본 위치'
             const baseLeft   = parseFloat(c.style.left);
             const baseTop    = parseFloat(c.style.top);
             const baseWidth  = rectsRaw[i].width;
@@ -187,7 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const baseCenterX= boxR.left + baseLeft + baseWidth/2;
             const baseCenterY= boxR.top  + baseTop  + baseHeight/2;
 
-            // 목표 중심 좌표(뷰포트)
             const targetCenterX = startXLeft + acc2 + widthsScaledTarget[i]/2;
             const targetCenterY = topY + (baseHeight * targetScale)/2;
 
@@ -198,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
             acc2 += widthsScaledTarget[i] + gap2;
           });
 
-          // 타이핑 엘리먼트도 위치/크기 애니메이션
           typingEl.style.transition =
             `left ${moveDuration}ms cubic-bezier(.22,.61,.36,1),
              top ${moveDuration}ms cubic-bezier(.22,.61,.36,1),
@@ -208,13 +175,24 @@ document.addEventListener("DOMContentLoaded", () => {
           typingEl.style.top      = (topY - boxR.top) + "px";
           typingEl.style.fontSize = (baseFont * targetScale) + "px";
         }
-        // ===== 이동 끝 =====
-
-      }, 1000); // 중앙으로 모이는 트랜지션 시간과 동일
+      }, 1000);
     }, 1700);
 
-    io.disconnect(); // 한 번만 실행
+    io.disconnect(); // 한 번만
   }, { threshold: 0.55 });
 
   io.observe(box);
+}
+
+/* === 실행 시점 제어 ===
+   1) Hero 타이핑은 window load 때 시작
+   2) About 애니메이션은 "폰트 로드 완료 후" 시작(중요!)  */
+window.addEventListener('load', () => {
+  typing();
+
+  const ready = (document.fonts && document.fonts.ready)
+    ? document.fonts.ready
+    : Promise.resolve();
+
+  ready.then(startAboutAnimation);
 });

@@ -1,60 +1,66 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>GDGoC DongA</title>
-    <!-- 사이트 아이콘 -->
-    <link rel="icon" type="image/png" sizes="32x32" href="png/GDGoC Icon.png">
-    <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GDGoC DongA</title>
+
+  <!-- ✅ Google Font: GH Pages에서도 동일한 글꼴/폭 보장을 위해 명시 로드 -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;800&display=swap" rel="stylesheet" />
+
+  <!-- 사이트 아이콘 (가능하면 공백 없는 파일명으로 교체 추천) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="png/GDGoC Icon.png" />
+
+  <!-- 캐시 무효화를 위해 쿼리스트링 한 번만 붙여둠 -->
+  <link rel="stylesheet" href="css/style.css?v=1" />
 </head>
 <body>
-    <!-- 네비게이션 바 -->
-    <header class="navbar">
-        <div class="nav-left">
-            <a href="index.html" class="logo-link">
-                <img src="png/GDGoC Icon.png" alt="GDGoC Icon" class="logo-small">
-                <span>GDGoC DAU 4th</span>
-            </a>
-        </div>
-        <nav class="nav-right">
-            <a href="#about">프로젝트</a>
-            <a href="#session">세션</a>
-            <a href="#calendar">캘린더</a>
-            <a href="#members">구성원</a>
-        </nav>
-    </header>
+  <!-- 네비게이션 바 -->
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="index.html" class="logo-link">
+        <img src="png/GDGoC Icon.png" alt="GDGoC Icon" class="logo-small" />
+        <span>GDGoC DAU 4th</span>
+      </a>
+    </div>
+    <nav class="nav-right">
+      <a href="#about">프로젝트</a>
+      <a href="#session">세션</a>
+      <a href="#calendar">캘린더</a>
+      <a href="#members">구성원</a>
+    </nav>
+  </header>
 
-    <!-- Hero Section -->
-    <section class="section hero">
-        <div class="overlay"></div>
-        <div class="content">
-            <img src="png/GDGoC Icon.png" alt="GDGoC Logo" class="logo">
-            <h1 id="typing-text"></h1>
-        </div>
-    </section>
+  <!-- Hero Section -->
+  <section class="section hero">
+    <div class="overlay"></div>
+    <div class="content">
+      <img src="png/GDGoC Icon.png" alt="GDGoC Logo" class="logo" />
+      <h1 id="typing-text"></h1>
+    </div>
+  </section>
 
-    <!-- About Section -->
-    <section id="about" class="section about">
-        <h2 class="about-title">
-            <span id="gdgoc-box">
-                <span id="gdgoc-text">Google Developer Group on Campus</span>
-            </span>
-        </h2>
-    </section>
+  <!-- About Section -->
+  <section id="about" class="section about">
+    <h2 class="about-title">
+      <span id="gdgoc-box">
+        <span id="gdgoc-text">Google Developer Group on Campus</span>
+      </span>
+    </h2>
+  </section>
 
-    <!-- Projects Section -->
-    <section id="projects" class="section projects">
-        <h2>주요 활동</h2>
-        <ul>
-            <li>스터디 & 세션</li>
-            <li>팀 프로젝트</li>
-            <li>네트워킹</li>
-        </ul>
-    </section>
+  <!-- Projects Section -->
+  <section id="projects" class="section projects">
+    <h2>주요 활동</h2>
+    <ul>
+      <li>스터디 &amp; 세션</li>
+      <li>팀 프로젝트</li>
+      <li>네트워킹</li>
+    </ul>
+  </section>
 
-    <!-- 스크립트 -->
-    <script src="script/script.js"></script>
-    <script src="script/scroll.js"></script>
+  <!-- ✅ 스크립트는 defer로: DOM 준비 후 실행 / 캐시버스터 쿼리 -->
+  <script src="script/script.js?v=1" defer></script>
+  <script src="script/scroll.js?v=1" defer></script>
 </body>
 </html>
