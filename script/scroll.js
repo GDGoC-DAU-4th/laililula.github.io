@@ -62,6 +62,7 @@
 const sections = document.querySelectorAll(".section");
 let currentIndex = 0;
 let isScrolling = false;
+window.__pageTargetIndex = 0;
 
 // ✅ 전역 잠금 감지 (Hero 타이핑 / About 애니 / lockScroll 고정)
 function isGlobalLocked() {
@@ -83,6 +84,7 @@ function clamp(i) {
 
 function scrollToSection(index) {
   index = clamp(index);
+  window.__pageTargetIndex = index;
   setScrolling(true);
 
   // 네가 쓰던 모션 그대로
@@ -176,4 +178,82 @@ window.addEventListener("load", () => {
     if (d < bestDist) { bestDist = d; best = i; }
   });
   currentIndex = best;
+  window.__pageTargetIndex = currentIndex;  // ✅ 초기값 동기화
 });
+
+/* =========================
+ * Nav 앵커 클릭 → 엘리베이터 스크롤
+ * ========================= */
+document.addEventListener('click', (e) => {
+  const a = e.target.closest('a[href^="#"]');
+  if (!a) return;
+
+  // 애니 중/우리 스크롤 중엔 클릭 무시
+  if (typeof isGlobalLocked === 'function' && isGlobalLocked()) { e.preventDefault(); return; }
+  if (typeof isScrolling !== 'undefined' && isScrolling) { e.preventDefault(); return; }
+
+  const id = decodeURIComponent(a.getAttribute('href').slice(1));
+  if (!id) return;
+
+  const target = document.getElementById(id);
+  if (!target) return; // (참고) 아직 섹션이 없다면 그냥 기본 동작
+
+  e.preventDefault();
+
+  // 이 앵커가 어떤 .section 안에 있는지 인덱스 찾기
+  const secs = Array.from(document.querySelectorAll('.section'));
+  let idx = secs.findIndex(sec => sec === target || sec.contains(target));
+
+  // .section ID가 직접 달려있지 않다면, 가장 가까운 섹션으로 보정
+  if (idx === -1) {
+    const nearest = secs.reduce((best, sec, i) => {
+      const d = Math.abs(sec.offsetTop - target.offsetTop);
+      return d < best.d ? { d, i } : best;
+    }, { d: Infinity, i: 0 });
+    idx = nearest.i;
+  }
+
+  // 네가 쓰던 모션 그대로 호출
+  if (typeof scrollToSection === 'function') {
+    // 전역 currentIndex가 있다면 업데이트
+    if (typeof currentIndex !== 'undefined') currentIndex = idx;
+    scrollToSection(idx);
+  } else {
+    // 혹시 scrollToSection이 없다면 헤더 보정해서 부드럽게
+    const header = document.querySelector('.navbar');
+    const headerH = header ? header.offsetHeight : 0;
+    const y = Math.max(0, target.getBoundingClientRect().top + window.scrollY - headerH);
+    // isScrolling 플래그 사용하는 경우 동기화
+    if (typeof setScrolling === 'function') setScrolling(true);
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    setTimeout(() => { if (typeof setScrolling === 'function') setScrolling(false); }, 1100);
+  }
+});
+
+// === Hero -> Projects 한 번에 이동 시 About 애니메이션 1회 스킵 플래그 ===
+(() => {
+  const sections = Array.from(document.querySelectorAll('.section'));
+  if (!sections.length) return;
+
+  // 현재 화면 중앙에 가장 가까운 섹션 인덱스
+  function nearestIndex() {
+    const mid = window.scrollY + window.innerHeight / 2;
+    let best = 0, bestDist = Infinity;
+    sections.forEach((sec, i) => {
+      const d = Math.abs(sec.offsetTop - mid);
+      if (d < bestDist) { bestDist = d; best = i; }
+    });
+    return best;
+  }
+
+  // 네비에서 "#projects"를 클릭했고, 지금 Hero(인덱스 0)에 있으면 1회 스킵
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href="#projects"]');
+    if (!a) return;
+    const idx = nearestIndex();
+    if (idx === 0) {
+      // 이 플래그는 다음에 #about이 보일 때 한 번만 체크되고 바로 해제됨
+      window.__skipAboutOnce = true;
+    }
+  }, true);
+})();
