@@ -35,7 +35,7 @@ body, html {
 }
 
 .logo {
-  width: 400px;   /* 원하는 크기로 조정 */
+  width: 380px;   /* 원하는 크기로 조정 */
   margin-bottom: 20px; /* 글자와 겹치지 않게 간격 */
   margin-top: 100px;
 }
@@ -43,6 +43,7 @@ body, html {
 h1 {
   font-size: 2.5rem;
   margin: 0 0 20px 0;
+  color: black
 }
 
 p {
