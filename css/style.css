@@ -1,11 +1,12 @@
 /* 전체 페이지 기본 스타일 */
-body, html {
+html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: 'Noto Sans KR', sans-serif;
   color: #fff;
-  overflow: hidden;
+  overflow-x: hidden;      /* 가로만 숨김 */
+  overflow-y: auto;        /* 세로는 스크롤 허용 */
 }
 /* 스크롤바 감추고 싶으면 */
 body {
@@ -13,6 +14,14 @@ body {
 }
 body::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
+}
+
+html {
+  /* 고정 헤더(70px)만큼 스냅 오프셋 보정 */
+  scroll-padding-top: 70px;
+}
+html::-webkit-scrollbar {      /* Chrome/Safari */
+  display: none;
 }
 
 /* 네비게이션 바 */
@@ -205,3 +214,5 @@ button:hover {
 @keyframes gdgoc-caret-blink {
   50% { opacity: 0; }
 }
+
+html.no-snap { scroll-snap-type: none !important; }  /* 수동 애니 중엔 스냅 잠시 OFF */

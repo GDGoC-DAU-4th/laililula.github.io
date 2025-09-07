@@ -1,10 +1,62 @@
 /************************************
+ * 0) 스크롤 '하드' 잠금/해제 유틸로 교체
+ ************************************/
+let __lock = { active:false, y:0 };
+function _preventDefault(e){ e.preventDefault(); }
+function _preventKeys(e){
+  const keys = ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','PageUp','PageDown','Home','End'];
+  if (keys.includes(e.code) || keys.includes(e.key)) e.preventDefault();
+}
+function lockScroll(){
+  if (__lock.active) return;
+  __lock.active = true;
+  __lock.y = window.scrollY || document.documentElement.scrollTop || 0;
+
+  // 화면 자체를 고정 (모바일 포함)
+  document.body.style.position = 'fixed';
+  document.body.style.top = `-${__lock.y}px`;
+  document.body.style.left = '0';
+  document.body.style.right = '0';
+  document.body.style.width = '100%';
+  document.body.style.touchAction = 'none';
+
+  // 입력 이벤트 차단
+  window.addEventListener('wheel', _preventDefault, { passive:false, capture:true });
+  window.addEventListener('touchmove', _preventDefault, { passive:false, capture:true });
+  window.addEventListener('keydown', _preventKeys, { passive:false, capture:true });
+
+  // 다른 스크립트 가드용
+  window.__animatingAbout = true;
+}
+function unlockScroll(){
+  if (!__lock.active) return;
+
+  window.removeEventListener('wheel', _preventDefault, true);
+  window.removeEventListener('touchmove', _preventDefault, true);
+  window.removeEventListener('keydown', _preventKeys, true);
+
+  document.body.style.position = '';
+  document.body.style.top = '';
+  document.body.style.left = '';
+  document.body.style.right = '';
+  document.body.style.width = '';
+  document.body.style.touchAction = '';
+
+  window.scrollTo(0, __lock.y);
+
+  __lock.active = false;
+  window.__animatingAbout = false;
+}
+
+/************************************
  * 1) 타이핑 효과 (Hero)
  ************************************/
 const text = "Google Developer Group on Campus<br>Dong-A University";
 const typingText = document.getElementById("typing-text");
 
+window.__animatingHero = true;   // ✅ 타이핑 시작 전에 잠금 ON
 let i = 0;
+
 function typing() {
   if (i < text.length) {
     if (text.substring(i, i + 4) === "<br>") {
@@ -15,12 +67,16 @@ function typing() {
       i++;
     }
     setTimeout(typing, 60);
+  } else {
+    window.__animatingHero = false;  // ✅ 타이핑 끝나면 잠금 OFF
   }
 }
 
 /************************************
  * 2) GDGoC 변환 애니메이션 (About)
- *    - 폰트 로드 후에 시작하도록 분리
+ *    - 폰트 로드 후 시작
+ *    - 애니 동안 스크롤 '하드' 잠금
+ *    - About이 95% 이상 보일 때만 시작(초기 잠김 방지)
  ************************************/
 function startAboutAnimation() {
   const box  = document.getElementById("gdgoc-box");
@@ -36,20 +92,28 @@ function startAboutAnimation() {
     const wrap  = document.createElement("span"); wrap.className = "word";
     const first = document.createElement("span"); first.className = "first"; first.textContent = w[0];
     const rest  = document.createElement("span"); rest.className  = "rest";  rest.textContent  = w.slice(1);
-    wrap.append(first, rest);
-    line.appendChild(wrap);
-    firsts.push(first);
+    wrap.append(first, rest); line.appendChild(wrap); firsts.push(first);
   });
 
   const rests = [...line.querySelectorAll(".rest")];
 
+  let started = false; // ✅ 중복/조기 실행 방지
   const io = new IntersectionObserver((entries) => {
-    if (!entries[0].isIntersecting) return;
+    const entry = entries[0];
+    if (!entry.isIntersecting) return;
+
+    // ✅ About이 거의 다 보일 때(95% 이상)만 시작
+    if (entry.intersectionRatio < 0.95) return;
+    if (started) return;
+    started = true;
+
+    // ✅ 애니 시작과 동시에 하드 잠금
+    lockScroll();
 
     // 1) 나머지 글자 fade-out
     setTimeout(() => { rests.forEach(el => el.classList.add("hide")); }, 900);
 
-    // 2) 중앙으로 모으기 → 3) 타이핑 → 4) 왼쪽 상단으로 이동 + 축소
+    // 2) 중앙으로 모으기 → 3) 타이핑 → 4) 왼쪽 상단 이동 + 축소
     setTimeout(() => {
       const phrase = "는 무엇을 하는 곳인가요?";
       const scale  = 1.35, gap = 6, phraseGap = 12;
@@ -125,8 +189,8 @@ function startAboutAnimation() {
 
         // 중앙 → 왼쪽 상단 이동 + 축소
         function moveToTopLeft(){
-          const marginLeft  = 56;   // 여백: 왼쪽
-          const marginTop   = 96;   // 여백: 상단
+          const marginLeft  = 56;   // 왼쪽 여백
+          const marginTop   = 96;   // 상단 여백
           const targetScale = 1.00; // 축소 비율
           const moveDuration= 900;
           const gap2 = 6, phraseGap2 = 12;
@@ -137,13 +201,13 @@ function startAboutAnimation() {
 
           const meas2 = document.createElement("span");
           meas2.style.cssText = `position:absolute;visibility:hidden;white-space:nowrap;font-weight:700;font-size:${baseFont*targetScale}px`;
-          meas2.textContent = phrase;
+          meas2.textContent = "는 무엇을 하는 곳인가요?";
           box.appendChild(meas2);
           const phraseWidthTarget = meas2.getBoundingClientRect().width;
           meas2.remove();
 
-          const startXLeft = marginLeft; // 전체 문장의 왼쪽 x (뷰포트)
-          const topY       = marginTop;  // 전체 문장의 윗 y   (뷰포트)
+          const startXLeft = marginLeft;
+          const topY       = marginTop;
 
           let acc2 = 0;
           clones.forEach((c, i) => {
@@ -174,20 +238,29 @@ function startAboutAnimation() {
           typingEl.style.left     = (startXLeft + gdgocWidthTarget + phraseGap2 - boxR.left) + "px";
           typingEl.style.top      = (topY - boxR.top) + "px";
           typingEl.style.fontSize = (baseFont * targetScale) + "px";
+
+          // ✅ 이동 끝나면 스크롤 해제
+          const onDone = () => { typingEl.removeEventListener('transitionend', onDone); unlockScroll(); };
+          typingEl.addEventListener('transitionend', onDone);
+          setTimeout(unlockScroll, moveDuration + 200); // 안전장치
         }
       }, 1000);
     }, 1700);
 
-    io.disconnect(); // 한 번만
-  }, { threshold: 0.55 });
-
+    // 관찰은 1회만
+    io.disconnect();
+  }, { threshold: [0.0, 0.95], rootMargin: '0px 0px -5% 0px' });
+  //  - threshold 0.95: 95% 이상 보여야 실행
+  //  - rootMargin -5%: 아래쪽 여백 조금 빼서 더 안전
   io.observe(box);
 }
 
-/* === 실행 시점 제어 ===
-   1) Hero 타이핑은 window load 때 시작
-   2) About 애니메이션은 "폰트 로드 완료 후" 시작(중요!)  */
+/* 실행 시점: 폰트 로드 후 시작 */
 window.addEventListener('load', () => {
+  // 혹시 CSS에서 overflow 숨겨놨다면 스크롤 가능하도록 보정 (선택)
+  document.documentElement.style.overflowY = 'auto';
+  document.body.style.overflowY = 'auto';
+
   typing();
 
   const ready = (document.fonts && document.fonts.ready)
@@ -195,4 +268,16 @@ window.addEventListener('load', () => {
     : Promise.resolve();
 
   ready.then(startAboutAnimation);
+});
+
+// 안전장치 1: 탭 전환/백그라운드로 가면 잠금 해제
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    try { unlockScroll(); } catch(e) {}
+  }
+});
+
+// 안전장치 2: 페이지 떠나기 직전 잠금 해제
+window.addEventListener('beforeunload', () => {
+  try { unlockScroll(); } catch(e) {}
 });
