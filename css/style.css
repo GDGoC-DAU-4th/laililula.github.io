@@ -7,6 +7,7 @@ html, body {
   color: #fff;
   overflow-x: hidden;      /* 가로만 숨김 */
   overflow-y: auto;        /* 세로는 스크롤 허용 */
+  overscroll-behavior: none;
 }
 /* 스크롤바 감추고 싶으면 */
 body {
