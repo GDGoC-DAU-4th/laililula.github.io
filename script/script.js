@@ -294,7 +294,7 @@ function startAboutAnimation() {
 }
 
 /************************************
- * 4) 실행 시점
+ * 4) 실행 시점ㅋㅋ
  ************************************/
 window.addEventListener('load', () => {
   document.documentElement.style.overflowY = 'auto';
