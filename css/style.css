@@ -1,223 +1,239 @@
-/* 전체 페이지 기본 스타일 */
+/* =========================
+   글로벌 기본
+========================= */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
   font-family: 'Noto Sans KR', sans-serif;
   color: #fff;
-  overflow-x: hidden;      /* 가로만 숨김 */
-  overflow-y: auto;        /* 세로는 스크롤 허용 */
+  overflow-x: hidden;            /* 가로만 숨김 */
+  overflow-y: auto;              /* 세로는 스크롤 허용 */
   overscroll-behavior: none;
 }
 /* 스크롤바 감추고 싶으면 */
-body {
-  scrollbar-width: none; /* Firefox */
-}
-body::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
+body { scrollbar-width: none; }                  /* Firefox */
+body::-webkit-scrollbar { display: none; }       /* Chrome/Safari */
 
-html {
-  /* 고정 헤더(70px)만큼 스냅 오프셋 보정 */
-  scroll-padding-top: 70px;
-}
-html::-webkit-scrollbar {      /* Chrome/Safari */
-  display: none;
-}
+html { scroll-padding-top: 70px; }               /* 고정 헤더 보정 */
+html::-webkit-scrollbar { display: none; }
 
-/* 네비게이션 바 */
+/* =========================
+   네비게이션 바
+========================= */
 .navbar {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 70px;
   background: #fff; border-bottom: 1px solid #ddd;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 clamp(16px, 4vw, 40px);   /* 반응형 패딩 */
+  padding: 0 clamp(16px, 4vw, 40px);
   box-sizing: border-box;
   z-index: 1000;
 }
-
-/* 왼쪽 로고 */
-.nav-left {
-  display: flex; align-items: center;
-  min-width: 0;                 /* 줄어들 때 넘침 방지 */
-  flex: 0 1 auto;
-}
-
+.nav-left { display: flex; align-items: center; min-width: 0; flex: 0 1 auto; }
 .logo-link {
   display: flex; align-items: center;
   text-decoration: none; color: #000;
-  font-weight: bold;
-  font-size: clamp(1rem, 1.2vw + .6rem, 1.2rem);
+  font-weight: bold; font-size: clamp(1rem, 1.2vw + .6rem, 1.2rem);
 }
+.logo-small { width: clamp(28px, 3.2vw, 40px); margin-right: 10px; }
 
-.logo-small {
-  width: clamp(28px, 3.2vw, 40px);
-  margin-right: 10px;
-}
-
-/* 오른쪽 메뉴 */
 .nav-right {
   display: flex; align-items: center; justify-content: flex-end;
-  gap: clamp(12px, 2.2vw, 28px); /* 고정 margin 대신 간격 */
-  min-width: 0;
-  flex: 1 1 auto;               /* 우측 영역이 상황에 맞게 줄어듦 */
+  gap: clamp(12px, 2.2vw, 28px); min-width: 0; flex: 1 1 auto;
 }
-
 .nav-right a {
   text-decoration: none; color: #000;
-  white-space: nowrap;          /* 줄바꿈으로 밀리지 않게 */
-  margin-left: 0;               /* 기존 30px 제거 */
+  white-space: nowrap; margin-left: 0;
   font-size: clamp(.92rem, 1.3vw, 1rem);
 }
-
 .nav-right a:hover { color: #4285f4; }
 
-/* 좁은 화면 대응: 공간 확보 위해 타이틀 텍스트 숨김 */
-@media (max-width: 820px) {
-  .logo-link span { display: none; }
-}
+@media (max-width: 820px) { .logo-link span { display: none; } }
 
-/* 각 섹션 */
+/* =========================
+   섹션 공통
+========================= */
 .section {
   height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  display: flex; justify-content: center; align-items: center;
   font-size: 3rem;
 }
 
-/* 배경 이미지 */
+/* =========================
+   Hero
+========================= */
 .hero {
-    position: relative;
-    height: 100vh;
-    display: flex;              /* ✅ flex 켜기 */
-    justify-content: flex-start;/* 세로 기준 위쪽 정렬 */
-    align-items: center;        /* 가로 기준 가운데 정렬 */
-    text-align: center;
-    flex-direction: column;
-    color: #000;
-    overflow: hidden;
-    padding-top: 50px;         /* 위쪽에서 살짝 띄우기 */
-}
-
-
-/* 아래쪽 그라데이션 */
-.overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 50%;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-}
-
-/* 콘텐츠 */
-.content {
   position: relative;
-  z-index: 2;
+  height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: flex-start; align-items: center;
+  text-align: center; color: #000;
+  overflow: hidden;
+  padding-top: 50px;
 }
-
-.logo {
-  width: 380px;   /* 원하는 크기로 조정 */
-  margin-bottom: 20px; /* 글자와 겹치지 않게 간격 */
-  margin-top: 100px;
+.overlay {
+  position: absolute; bottom: 0; left: 0; width: 100%; height: 50%;
+  background: linear-gradient(to top, rgba(0,0,0,.7), transparent);
 }
-
-h1 {
-  font-size: 2.5rem;
-  margin: 0 0 20px 0;
-  color: #000
+.content { position: relative; z-index: 2; }
+.logo { width: 380px; margin: 100px 0 20px; }
+h1 { font-size: 2.5rem; margin: 0 0 20px 0; color: #000; }
+p { font-size: 1.2rem; margin: 10px 0 20px 0; }
+button{
+  background:#ff4d4d; border:none; padding:12px 24px;
+  font-size:1rem; color:#fff; border-radius:6px; cursor:pointer;
 }
+button:hover{ background:#e63939; }
 
-p {
-  font-size: 1.2rem;
-  margin: 10px 0 20px 0;
-}
-
-button {
-  background: #ff4d4d;
-  border: none;
-  padding: 12px 24px;
-  font-size: 1rem;
-  color: #fff;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-button:hover {
-  background: #e63939;
-}
-
+/* =========================
+   About / Projects
+========================= */
 .about, .projects {
-  height: 100vh;       /* 각 섹션이 화면 한 장 크기 */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  height: 100vh;
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  position: relative; overflow: hidden;
   text-align: center;
 }
-
-/* About Section */
-.about{
-  height:100vh; display:flex; justify-content:center; align-items:center;
-  background:#000; color:#fff; text-align:center;
+.about {
+  background: #000; color: #fff;
+  position: relative;                 /* 키워드 레이어 기준점 */
 }
+.projects { background: #f4f4f4; color: #333; }
 
-/* Projects Section */
-.projects {
-  background: #f4f4f4;
-  color: #333;
-}
-
-/* 컨테이너: 절대좌표 기준점이 됨 */
-#gdgoc-box{ position:relative; display:inline-block; }
-
-/* 처음 표시되는 전체 문장 */
-#gdgoc-text{ font-size:2.2rem; font-weight:700; line-height:1.25; }
-
-/* 단어·글자 단위 제어용 */
+/* =========================
+   About - 초기 문구(GDGoC ...)
+========================= */
+#gdgoc-box { position: relative; display: inline-block; }
+#gdgoc-text { font-size: 2.2rem; font-weight: 700; line-height: 1.25; }
 #gdgoc-text .word{ display:inline-block; margin:0 8px; white-space:nowrap; }
 #gdgoc-text .first{ display:inline-block; font-weight:700; color:#8ab4f8; }
 #gdgoc-text .rest{ display:inline-block; transition:opacity .6s ease; }
 #gdgoc-text .rest.hide{ opacity:0; }
 
-/* 모으는 동안 잠깐 띄우는 효과(JS에서 transform만 변경) */
+/* 중앙 모으기용 떠있는 글자 */
 .floating-letter{
   position:absolute; font-weight:700; color:#8ab4f8;
-  will-change:transform;
-  transition:transform 1000ms cubic-bezier(.22,.61,.36,1);
+  will-change: transform;
+  transition: transform 1000ms cubic-bezier(.22,.61,.36,1);
 }
 
-/* 최종 GDGoC 글자 */
+/* 최종 GDGoC 글자(사용 시) */
 #gdgoc-final{
   position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-  font-size:3rem; font-weight:800; color:#8ab4f8;
-  opacity:0; transition:opacity .5s ease;
+  font-size:3rem; font-weight:800; color:#8ab4f8; opacity:0;
+  transition:opacity .5s ease;
 }
 #gdgoc-final.show{ opacity:1; }
 
-/* GDGoC 오른쪽 타이핑 텍스트 */
+/* 오른쪽 타이핑 텍스트 */
 #gdgoc-typing{
-  position: absolute;
-  white-space: nowrap;
-  font-weight: 700;
-  color: #fff; /* 배경이 검정인 about 섹션에 맞춤 */
+  position:absolute; white-space:nowrap; font-weight:700; color:#fff;
 }
-
-/* 깜빡이는 커서 */
 #gdgoc-typing::after{
-  content: "";
-  display: inline-block;
-  width: 2px;
-  height: 1em;
-  background: currentColor;
-  margin-left: 4px;
+  content:""; display:inline-block; width:2px; height:1em; background:currentColor;
+  margin-left:4px; animation: gdgoc-caret-blink 1s step-end infinite; vertical-align:-0.15em;
+}
+@keyframes gdgoc-caret-blink { 50%{ opacity:0; } }
+
+/* =========================
+   About - 키워드 & 문장 연출 (크기 업)
+========================= */
+
+/* 크기/간격 한 번에 튜닝할 변수 */
+:root{
+  --kw-base-size: clamp(20px, 3.2vw, 36px);  /* 일반 흰 글자 */
+  --kw-key-size:  clamp(26px, 4.2vw, 52px);  /* 키워드/Google */
+  --kw-line-gap:  min(2.6vh, 24px);          /* 줄 간격 */
+  --kw-word-gap:  clamp(10px, 1.2vw, 16px);  /* 단어 간격 */
+  --kw-center-shift: 40vh;
+}
+
+/* about 섹션 중앙에 정확히 고정 */
+.kw-typebox{
+  position: absolute;
+  left: 43%;
+  top: calc(50% - var(--kw-center-shift));  /* ← 여기만 바뀐 핵심 */
+  transform: translate(-50%, -50%);
+  width: min(1200px, 88vw);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--kw-line-gap);
+
+  text-align: center;
+  z-index: 3;                /* 캔버스(0) 아래 X, 타이틀(4) 아래/위는 상황에 따라 */
+  pointer-events: none;
+}
+
+/* 줄도 중앙 정렬 유지 */
+.kw-line{
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--kw-word-gap);
+  color: #fff;
+  font-size: var(--kw-base-size);
+  line-height: 1.28;
+  text-align: center;
+}
+
+
+/* 기본 텍스트 / 키워드(색 + 더 크게) */
+.kw-rest{ color:#fff; }
+.kw-key{ font-weight:800; font-size:var(--kw-key-size); }
+
+.kw-dev{  color:#ea4335; }     /* 빨강 */
+.kw-net{  color:#4285f4; }     /* 파랑 */
+.kw-proj{ color:#34a853; }     /* 초록 */
+.kw-grow{ color:#fbbc05; }     /* 노랑 */
+
+/* Google 로고 색(각 글자) — 키워드 크기 적용 */
+.kw-google{ font-weight:800; font-size:var(--kw-key-size); }
+.g-g,.g-g2{ color:#4285f4; }   /* G, g  */
+.g-o1{     color:#ea4335; }    /* o     */
+.g-o2{     color:#fbbc05; }    /* o     */
+.g-l{      color:#34a853; }    /* l     */
+.g-e{      color:#ea4335; }    /* e     */
+
+/* 커서 */
+.kw-caret{
+  display:inline-block;
+  width:2px; height:1em; background:#fff;
+  margin-left:2px; vertical-align:-0.12em;
   animation: gdgoc-caret-blink 1s step-end infinite;
-  vertical-align: -0.15em;
 }
 
-@keyframes gdgoc-caret-blink {
-  50% { opacity: 0; }
+/* 좁은 화면에서 살짝 줄이기(옵션) */
+@media (max-width: 560px){
+  :root{
+    --kw-base-size: clamp(18px, 4.0vw, 28px);
+    --kw-key-size:  clamp(26px, 6.5vw, 44px);
+    --kw-line-gap:  min(2.2vh, 18px);
+    --kw-word-gap:  clamp(8px, 2.4vw, 12px);
+  }
+}
+/* === About 배경: 0/1 엘리베이터 모션 === */
+.bin-canvas{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;            /* 👈 배경층 */
+  pointer-events: none;
+  opacity: .22;
 }
 
-html.no-snap { scroll-snap-type: none !important; }  /* 수동 애니 중엔 스냅 잠시 OFF */
+/* about 안의 다른 모든 요소를 캔버스 위로 올리기 */
+.about > *:not(.bin-canvas){
+  position: relative;
+  z-index: 2;                 /* 👈 콘텐츠층 */
+}
+
+/* 수동 애니 중엔 스냅 잠시 OFF (필요 시) */
+html.no-snap{ scroll-snap-type: none !important; }
