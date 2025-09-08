@@ -462,7 +462,7 @@ function initBinaryElevatorBg(){
   const cols = [];
   function setupCols(){
     cols.length = 0;
-    const cell = 16; // 글자 간격(px)
+    const cell = window.innerWidth <= 768 ? 18 : 16;   // 열 간격 조금 넓힘(모바일)
     const cw = about.clientWidth;
     const ch = about.clientHeight;
     const n = Math.ceil(cw / cell);
